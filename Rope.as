@@ -49,7 +49,17 @@ package
 		
 		public override function render (): void
 		{
-			Draw.line(p1.x, p1.y, p2.x, p2.y, 0xFFFFFF);
+			var dx:Number = p2.x - p1.x;
+			var dy:Number = p2.y - p1.y;
+			var dzSq:Number = dx*dx + dy*dy;
+			var dz:Number = Math.sqrt(dzSq);
+			
+			if (length < dz) {
+				Draw.line(p1.x, p1.y, p2.x, p2.y, 0xFFFFFF);
+			} else {
+				var extra:Number = length - dz;
+				Draw.curve(p1.x, p1.y, x, y + extra, p2.x, p2.y, 0xFFFFFF);
+			}
 		}
 	}
 }
