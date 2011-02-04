@@ -13,6 +13,9 @@ package
 		public var key:int;
 		
 		public var image:Image;
+		public var text:Text;
+		
+		public var grabbing:Boolean = false;
 		
 		public function Player (_key:int, _x:Number)
 		{
@@ -24,19 +27,36 @@ package
 			image = Image.createRect(40, 40, 0x0000FF);
 			image.centerOO();
 			
-			graphic = image;
+			text = new Text(Key.name(key));
+			text.centerOO();
+			
+			graphic = new Graphiclist(image, text);
+			
+			vy = -FP.random * 5 - 10;
+			
+			setHitbox(40, 40, 20, 20);
 		}
 		
 		public override function update (): void
 		{
-			if (Input.check(key)) {
-				if (Input.pressed(key)) {
-					x += FP.random * 20 - 10;
+			text.color = grabbing ? 0x0 : 0xFFFFFF;
+			
+			if (collide("ledge", x, y)) {
+				vy *= 0.95;
+			}
+			
+			if (Input.pressed(key) && collide("ledge", x, y)) {
+				grabbing = true;
+			}
+			
+			if (grabbing) {
+				if (Input.check(key)) {
+					vx = 0;
+					vy = 0;
+					return;
 				}
 				
-				vx = 0;
-				vy = 0;
-				return;
+				grabbing = false;
 			}
 			
 			x += vx;
@@ -46,6 +66,16 @@ package
 			
 			vx *= 0.99;
 			vy *= 0.99;
+			
+			vx += FP.random * 0.2 - 0.1;
+			
+			if (x < 0) {
+				vx += FP.random * 0.05;
+			}
+			
+			if (x > 640) {
+				vx -= FP.random * 0.05;
+			}
 		}
 	}
 }
