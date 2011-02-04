@@ -14,7 +14,6 @@ package
 		[Embed(source="images/bg.png")]
 		public static const BgGfx: Class;
 		
-		public var ledges:Array = [];
 		public var lastLedge:Entity;
 		
 		public function Level ()
@@ -33,7 +32,7 @@ package
 			
 			while (! lastLedge || camera.y + 480 > lastLedge.y + lastLedge.height + 30) {
 				var y:Number = lastLedge ? lastLedge.y + lastLedge.height : 0;
-				lastLedge = new Entity;
+				lastLedge = create(Entity, true);
 				lastLedge.type = "ledge";
 				
 				lastLedge.width = FP.random * 30 + 30;
@@ -43,16 +42,14 @@ package
 				lastLedge.y = y + FP.random * 30;
 				
 				lastLedge.graphic = Image.createRect(lastLedge.width, lastLedge.height, 0x888888);
-				
-				add(lastLedge);
-				
-				ledges.push(lastLedge);
 			}
+			
+			var ledges:Array = [];
+			getType("ledge", ledges);
 			
 			for each (var e:Entity in ledges) {
 				if (e.y + e.height < Math.min(p1.y, p2.y) - 1000) {
-					remove(e);
-					ledges.splice(ledges.indexOf(e), 1);
+					recycle(e);
 				}
 			}
 		}
