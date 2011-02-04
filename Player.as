@@ -66,7 +66,7 @@ package
 			
 			vy += 0.7;
 			
-			//vx *= 0.99;
+			if (vx < -4 || vx > 4) vx *= 0.99;
 			vy *= 0.99;
 			
 			vx += FP.random * 0.2 - 0.1;
