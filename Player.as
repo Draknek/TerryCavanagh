@@ -10,18 +10,42 @@ package
 		public var vx: Number = 0;
 		public var vy: Number = 0;
 		
-		public function Player (_x:Number = 0, _y:Number = 0, _vx:Number = 0, _vy:Number = 0)
+		public var key:int;
+		
+		public var image:Image;
+		
+		public function Player (_key:int, _x:Number)
 		{
+			key = _key;
+			
 			x = _x;
-			y = _y;
-			vx = _vx;
-			vy = _vy;
+			y = 50;
+			
+			image = Image.createRect(40, 40, 0x0000FF);
+			image.centerOO();
+			
+			graphic = image;
 		}
 		
 		public override function update (): void
 		{
+			if (Input.check(key)) {
+				if (Input.pressed(key)) {
+					x += FP.random * 20 - 10;
+				}
+				
+				vx = 0;
+				vy = 0;
+				return;
+			}
+			
 			x += vx;
 			y += vy;
+			
+			vy += 0.4;
+			
+			vx *= 0.99;
+			vy *= 0.99;
 		}
 	}
 }
