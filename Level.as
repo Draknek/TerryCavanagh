@@ -52,6 +52,7 @@ package
 			for each (var e:Entity in ledges) {
 				if (e.y + e.height < Math.min(p1.y, p2.y) - 1000) {
 					remove(e);
+					ledges.splice(ledges.indexOf(e), 1);
 				}
 			}
 		}
