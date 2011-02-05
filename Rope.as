@@ -15,6 +15,7 @@ package
 		
 		public var maxLength:Number = 600;
 		
+		public static const canSnap:Boolean = false;
 		public var snapped:Boolean = false;
 		
 		public function Rope (_p1:Player, _p2:Player)
@@ -50,8 +51,10 @@ package
 				dx /= dz;
 				dy /= dz;
 				
-				if (dz > maxLength) {
-					snapped = true;
+				if (canSnap) {
+					if (dz > maxLength) {
+						snapped = true;
+					}
 				}
 				
 				p1.vx += dx * force;
@@ -85,7 +88,12 @@ package
 				var t:Number = (dz - length) / (maxLength - length);
 				if (t > 1) t = 1;
 				t = 1 - t;
-				var c:uint = FP.getColorRGB(t*255, t*255, t*255);
+				var c:uint = 0xFFFFFF;
+				
+				if (canSnap) {
+					c = FP.getColorRGB(t*255, t*255, t*255);
+				}
+				
 				Draw.linePlus(p1.x, p1.y, p2.x, p2.y, c);
 			} else {
 				var extra:Number = length - dz;
