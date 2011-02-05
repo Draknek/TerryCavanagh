@@ -57,6 +57,10 @@ package
 					}
 				}
 				
+				if (Input.pressed(Key.SPACE)) {
+					force *= 10;
+				}
+				
 				p1.vx += dx * force;
 				p1.vy += dy * force;
 				

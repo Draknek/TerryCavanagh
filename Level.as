@@ -20,6 +20,13 @@ package
 		public var startText:Text;
 		
 		public static const startY:Number = 150;
+		public var startScore:Number = 0;
+		
+		public var gameOver:Boolean = false;
+		
+		public var score:int = 0;
+		public var scoreTime:int = 0;
+		public var time:int = 0;
 		
 		public function Level ()
 		{
@@ -38,16 +45,18 @@ package
 			addLedges();
 			
 			if (starting) {
-				if (Input.check(p1.key)) {
+				startScore = p1.y + 1;
+				
+				if (Input.pressed(p1.key)) {
 					p1.vy = 0;
 					p1.y += 1;
 				}
-				if (Input.check(p2.key)) {
+				if (Input.pressed(p2.key)) {
 					p2.vy = 0;
 					p2.y += 1;
 				}
 				
-				if (Input.check(p1.key) || Input.check(p2.key)) {
+				if (Input.pressed(p1.key) || Input.pressed(p2.key)) {
 					starting = false;
 					startText.text = "";
 				} else {
@@ -55,9 +64,84 @@ package
 				}
 			}
 			
+			time++;
+			
 			if (Input.pressed(Key.R)) {
 				FP.world = new Level;
 				return;
+			}
+			
+			if (!gameOver && (! p1.alive || ! p2.alive)) {
+				var message:String;
+				
+				var timeInSeconds:Number = scoreTime / 60;
+				var actualScore:Number = (score - startScore) / 100;
+				var speed:Number = actualScore / timeInSeconds;
+				
+				if ((p1.grabbing && ! p2.alive) || (p2.grabbing && ! p1.alive)) {
+					message = "Oh no!\n\nYour partner died";
+				}
+				
+				if (! p1.alive && ! p2.alive) {
+					message = "Oh no!\n\nYou both died";
+				}
+				
+				if (message) {
+					message += "\nafter bungeeing " + actualScore + " meters";
+					
+					if (speed) {
+						message += "\nAverage speed: " + speed.toFixed(2) + " m/s";
+					}
+					
+					if (p1.alive || p2.alive) {
+						message += "\n\nYou are a bad friend.";
+					}
+					
+					gameOver = true;
+					
+					var highscore:Number = Main.so.data.highscore;
+					var highspeed:Number = Main.so.data.highspeed;
+					
+					if (! highscore) highscore = 0;
+					if (! highspeed) highspeed = 0;
+					
+					if (actualScore > highscore) {
+						Main.so.data.highscore = actualScore;
+						Main.so.flush();
+						
+						message += "\n\nNew record!";
+						
+						if (highscore) message += "\nPrevious best: " + highscore + " meters";
+					} else if (highscore) {
+						message += "\n\nHigh score: " + highscore + " meters";
+					}
+					
+					if (speed > highspeed) {
+						Main.so.data.highspeed = speed;
+						Main.so.flush();
+						
+						if (highspeed) message += "\n\nNew record!\nPrevious fastest speed: " + highspeed.toFixed(2) + " m/s";
+					} else if (highspeed) {
+						message += "\n\nHigh speed: " + highspeed.toFixed(2) + " m/s";
+					}
+					
+					message += "\n\nPress R to reset";
+					
+					var resetText:Text = new Text(message, 320, 240, {align:"center", scrollY:0});
+					resetText.centerOO();
+					addGraphic(resetText, -150);
+				}
+			}
+			
+			if (! gameOver) {
+				if (p1.grabbing) {
+					score = Math.max(score, p1.y);
+					scoreTime = time;
+				}
+				if (p2.grabbing) {
+					score = Math.max(score, p2.y);
+					scoreTime = time;
+				}
 			}
 			
 			if (p1.grabbing && p2.grabbing) {
@@ -85,7 +169,7 @@ package
 				lastLedge.height = FP.random * 30 + 30;
 				
 				lastLedge.x = first ? 320 - lastLedge.width*0.5 : FP.random*(640 - lastLedge.width);
-				lastLedge.y = first ? startY : y + FP.random * 30;
+				lastLedge.y = first ? startY : y + FP.random * Math.min(camera.y * 0.01 + 30, 320);
 				
 				lastLedge.graphic = Image.createRect(lastLedge.width, lastLedge.height, FP.getColorRGB(FP.rand(64), FP.rand(55)+200, FP.rand(64)));
 			}

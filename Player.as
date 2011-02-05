@@ -18,6 +18,12 @@ package
 		public var grabbing:Boolean = false;
 		public var touchingLedge:Boolean = false;
 		
+		public var alive:Boolean = true;
+		
+		public var c:uint;
+		
+		public static const killSpeed:Number = 35;
+		
 		public function Player (_key:int, _x:Number)
 		{
 			key = _key;
@@ -25,7 +31,9 @@ package
 			x = _x;
 			y = Level.startY - 20;
 			
-			image = Image.createRect(40, 40, (_x < 320) ? 0xFF0000 : 0x0000FF);
+			c = (_x < 320) ? 0xFFFF00 : 0x00FFFF;
+			
+			image = Image.createRect(40, 40, c);
 			image.centerOO();
 			
 			text = new Text(Key.name(key));
@@ -42,14 +50,24 @@ package
 		
 		public override function update (): void
 		{
+			image.color = alive ? c : 0x0;
+			
 			var wasTouchingLedge:Boolean = touchingLedge;
 			touchingLedge = collide("ledge", x, y) != null;
 			text.color = 0xFFFFFF;
 			
 			if (touchingLedge && ! wasTouchingLedge) {
+				if (vy > killSpeed) {
+					if (! Level(world).p1.grabbing && ! Level(world).p2.grabbing) {
+						alive = false;
+						
+						vy *= -0.01;
+					}
+				}
+				
 				vy *= 0.75;
 				
-				if (Input.check(key)) {
+				if (alive && Input.check(key)) {
 					vy *= 0.5;
 				}
 			}
@@ -57,7 +75,7 @@ package
 			if (touchingLedge) {
 				vy *= 0.95;
 				
-				text.color = grabbing ? 0xFFFFFF : 0x0;
+				if (alive) text.color = grabbing ? 0xFFFFFF : 0x0;
 				
 				/*if (Input.check(key)) {
 					vx *= 0.95;
@@ -65,18 +83,20 @@ package
 				}*/
 			}
 			
-			if (Input.pressed(key) && collide("ledge", x, y)) {
-				grabbing = true;
-			}
-			
-			if (grabbing) {
-				if (Input.check(key)) {
-					vx = 0;
-					vy = 0;
-					return;
+			if (alive) {
+				if (Input.pressed(key) && collide("ledge", x, y)) {
+					grabbing = true;
 				}
+			
+				if (grabbing) {
+					if (Input.check(key)) {
+						vx = 0;
+						vy = 0;
+						return;
+					}
 				
-				grabbing = false;
+					grabbing = false;
+				}
 			}
 			
 			x += vx;
@@ -85,9 +105,20 @@ package
 			vy += 0.7;
 			
 			if (vx < -4 || vx > 4) vx *= 0.99;
-			vy *= 0.99;
+			//vy *= 0.99;
+			
+			if (! alive) {
+				vx *= 0.995;
+				vy *= 0.995;
+			}
 			
 			vx += FP.random * 0.2 - 0.1;
+			
+			if (! Level(world).p1.grabbing || ! Level(world).p2.grabbing) {
+				var time:Number = Level(world).time / 60.0;
+				
+				//vx += Math.sin(time)*0.2*FP.random;
+			}
 			
 			if (x < 50) {
 				vx += FP.random * 0.001 * (50 - x);
@@ -95,6 +126,15 @@ package
 			
 			if (x > 640 - 50) {
 				vx -= FP.random * 0.001 * (x - (640 - 50));
+			}
+			
+			if (alive && ! Level(world).p1.grabbing && ! Level(world).p2.grabbing) {
+				var t:Number = (killSpeed - vy); // 0 = kill speed, > 0 = less than kill speed
+				
+				if (t < 15) {
+					t = t / 15.0;
+					image.color = FP.colorLerp(0xFF0000, c, t * t);
+				}
 			}
 		}
 	}

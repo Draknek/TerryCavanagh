@@ -2,9 +2,13 @@ package
 {
 	import net.flashpunk.*;
 	
+	import flash.net.*;
+	
 	[SWF(width = "640", height = "480", backgroundColor="#000000")]
 	public class Main extends Engine
 	{
+		public static const so:SharedObject = SharedObject.getLocal("bungee", "/");
+		
 		public function Main () 
 		{
 			super(640, 480, 60, true);
