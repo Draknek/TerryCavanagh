@@ -31,6 +31,7 @@ package
 			y = (p1.y + p2.y)*0.5;
 			
 			if (snapped) {
+				y = Math.min(p1.y, p2.y);
 				return;
 			}
 			
@@ -63,22 +64,29 @@ package
 		
 		public override function render (): void
 		{
-			if (snapped) { return; }
-			
-			x = (p1.x + p2.x)*0.5;
-			y = (p1.y + p2.y)*0.5;
-			
 			var dx:Number = p2.x - p1.x;
 			var dy:Number = p2.y - p1.y;
 			var dzSq:Number = dx*dx + dy*dy;
 			var dz:Number = Math.sqrt(dzSq);
+			
+			dx /= dz;
+			dy /= dz;
+			
+			if (snapped) {
+				Draw.line(p1.x, p1.y, p1.x + dx*maxLength*0.5, p1.y + dy*maxLength*0.5, 0x0);
+				Draw.line(p2.x, p2.y, p2.x - dx*maxLength*0.5, p2.y - dy*maxLength*0.5, 0x0);
+				return;
+			}
+			
+			x = (p1.x + p2.x)*0.5;
+			y = (p1.y + p2.y)*0.5;
 			
 			if (length < dz) {
 				var t:Number = (dz - length) / (maxLength - length);
 				if (t > 1) t = 1;
 				t = 1 - t;
 				var c:uint = FP.getColorRGB(t*255, t*255, t*255);
-				Draw.line(p1.x, p1.y, p2.x, p2.y, c);
+				Draw.linePlus(p1.x, p1.y, p2.x, p2.y, c);
 			} else {
 				var extra:Number = length - dz;
 				Draw.curve(p1.x, p1.y, x, y + extra, p2.x, p2.y, 0xFFFFFF);

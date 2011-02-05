@@ -16,13 +16,14 @@ package
 		public var text:Text;
 		
 		public var grabbing:Boolean = false;
+		public var touchingLedge:Boolean = false;
 		
 		public function Player (_key:int, _x:Number)
 		{
 			key = _key;
 			
 			x = _x;
-			y = 50;
+			y = Level.startY - 20;
 			
 			image = Image.createRect(40, 40, (_x < 320) ? 0xFF0000 : 0x0000FF);
 			image.centerOO();
@@ -41,13 +42,30 @@ package
 		
 		public override function update (): void
 		{
-			text.color = grabbing ? 0x0 : 0xFFFFFF;
+			var wasTouchingLedge:Boolean = touchingLedge;
+			touchingLedge = collide("ledge", x, y) != null;
+			text.color = 0xFFFFFF;
 			
-			if (collide("ledge", x, y)) {
-				vy *= 0.95;
+			if (touchingLedge && ! wasTouchingLedge) {
+				vy *= 0.75;
+				
+				if (Input.check(key)) {
+					vy *= 0.5;
+				}
 			}
 			
-			if (Input.check(key) && collide("ledge", x, y)) {
+			if (touchingLedge) {
+				vy *= 0.95;
+				
+				text.color = grabbing ? 0xFFFFFF : 0x0;
+				
+				/*if (Input.check(key)) {
+					vx *= 0.95;
+					vy *= 0.9;
+				}*/
+			}
+			
+			if (Input.pressed(key) && collide("ledge", x, y)) {
 				grabbing = true;
 			}
 			
