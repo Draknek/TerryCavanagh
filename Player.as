@@ -22,7 +22,16 @@ package
 		
 		public var c:uint;
 		
-		public static const killSpeed:Number = 35;
+		public static const maxDamage:Number = 10;
+		public static const maxEndurance:Number = 10;
+		
+		public static const damageRecovery:Number = 0.2;
+		public static const enduranceRecovery:Number = 0.25;
+		
+		public static const enduranceDrain:Number = 0.075;
+		
+		public var damage:Number = 0;
+		public var endurance:Number = maxEndurance;
 		
 		public function Player (_key:int, _x:Number)
 		{
@@ -31,7 +40,7 @@ package
 			x = _x;
 			y = Level.startY - 20;
 			
-			c = (_x < 320) ? 0xFFFF00 : 0x00FFFF;
+			c = (_x < 320) ? 0xFFFF00 : 0xFF00FF;
 			
 			image = Image.createRect(40, 40, c);
 			image.centerOO();
@@ -50,18 +59,42 @@ package
 		
 		public override function update (): void
 		{
-			image.color = alive ? c : 0x0;
+			trace(endurance);
+			
+			if (grabbing) {
+				image.color = FP.colorLerp(0x0, c, endurance / maxEndurance);
+			} else {
+				image.color = FP.colorLerp(c, 0xFF0000, damage / maxDamage);
+			}
 			
 			var wasTouchingLedge:Boolean = touchingLedge;
 			touchingLedge = collide("ledge", x, y) != null;
 			text.color = 0xFFFFFF;
 			
+			if (alive) {
+				damage -= damageRecovery;
+				damage = Math.max(0, damage);
+				
+				endurance += enduranceRecovery;
+				endurance = Math.min(maxEndurance, endurance);
+			}
+			
 			if (touchingLedge && ! wasTouchingLedge) {
-				if (vy > killSpeed) {
-					if (! Level(world).p1.grabbing && ! Level(world).p2.grabbing) {
+				if (alive && vy > 0) {
+					damage += Math.sqrt(vy);
+					
+					if (damage > maxDamage) {
 						alive = false;
-						
-						vy *= -0.01;
+					} else {
+						vy *= 1.0 - 0.1 * damage / maxDamage;
+					}
+				}
+				
+				if (! alive) {
+					if (Level(world).p1.alive || Level(world).p2.alive) {
+						vy *= 0.5;
+					} else {
+						vy *= 0.25;
 					}
 				}
 				
@@ -92,7 +125,15 @@ package
 					if (Input.check(key)) {
 						vx = 0;
 						vy = 0;
-						return;
+						damage = 0;
+						
+						endurance -= enduranceDrain + enduranceRecovery;
+						
+						if (endurance > 0) {
+							return;
+						}
+						
+						// else fall-through, grabbing = false
 					}
 				
 					grabbing = false;
@@ -128,14 +169,14 @@ package
 				vx -= FP.random * 0.001 * (x - (640 - 50));
 			}
 			
-			if (alive && ! Level(world).p1.grabbing && ! Level(world).p2.grabbing) {
+			/*if (alive && ! Level(world).p1.grabbing && ! Level(world).p2.grabbing) {
 				var t:Number = (killSpeed - vy); // 0 = kill speed, > 0 = less than kill speed
 				
 				if (t < 15) {
 					t = t / 15.0;
 					image.color = FP.colorLerp(0xFF0000, c, t * t);
 				}
-			}
+			}*/
 		}
 	}
 }

@@ -14,7 +14,7 @@ package
 		[Embed(source="images/bg.png")]
 		public static const BgGfx: Class;
 		
-		public var lastLedge:Entity;
+		public var lastLedge:Ledge;
 		
 		public var starting:Boolean = true;
 		public var startText:Text;
@@ -161,17 +161,46 @@ package
 				var first:Boolean = (lastLedge == null);
 				
 				var y:Number = first ? 0 : lastLedge.y + lastLedge.height;
-				lastLedge = create(Entity, true);
+				lastLedge = create(Ledge, false) as Ledge;
 				lastLedge.type = "ledge";
 				lastLedge.layer = 50;
 				
 				lastLedge.width = FP.random * 30 + 30 + int(first)*300;
 				lastLedge.height = FP.random * 30 + 30;
 				
-				lastLedge.x = first ? 320 - lastLedge.width*0.5 : FP.random*(640 - lastLedge.width);
 				lastLedge.y = first ? startY : y + FP.random * Math.min(camera.y * 0.01 + 30, 320);
+				lastLedge.x = first ? 320 - lastLedge.width*0.5 : FP.random*(640 - lastLedge.width);
+				
+				if (! gameOver && p1.alive != p2.alive && FP.random < 0.5) {
+					// hacks to help the players die closer together
+					
+					var moveAway:Boolean = FP.random < 0.5;
+					
+					var p:Player;
+					
+					if (moveAway) p = p1.alive ? p2 : p1;
+					else p = p1.alive ? p1 : p2;
+					
+					var dy:Number = (lastLedge.y - p.y);
+					var t:Number = dy / p.vy;
+					var dx:Number = p.vy * t * (0.5 * FP.random);
+					
+					if (moveAway) {
+						while (lastLedge.x - lastLedge.width < p.x + dx && lastLedge.x + lastLedge.width*2 > p.x + dx) {
+							lastLedge.x = FP.random*(640 - lastLedge.width);
+						}
+					} else {
+						lastLedge.x = p.x + dx - lastLedge.width*FP.random;
+						
+						if (lastLedge.x + lastLedge.width > 640 || lastLedge.x < 0) {
+							lastLedge.x = FP.random*(640 - lastLedge.width);
+						}
+					}
+				}
 				
 				lastLedge.graphic = Image.createRect(lastLedge.width, lastLedge.height, FP.getColorRGB(FP.rand(64), FP.rand(55)+200, FP.rand(64)));
+				
+				add(lastLedge);
 			}
 			
 			var ledges:Array = [];

@@ -8,6 +8,7 @@ Arbitrary collectibles
 Per-day levels
 Damage scale rather than binary: builds up based on velocity
 Knocked out
+Grapple bungee
 
 The great umbilical brothers
 
