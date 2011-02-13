@@ -15,7 +15,7 @@ package
 		public var image:Image;
 		public var text:Text;
 		
-		public var grabbing:Boolean = false;
+		public var grabbing:Ledge;
 		public var touchingLedge:Boolean = false;
 		
 		public var alive:Boolean = true;
@@ -28,7 +28,7 @@ package
 		public static const damageRecovery:Number = 0.2;
 		public static const enduranceRecovery:Number = 0.25;
 		
-		public static const enduranceDrain:Number = 0.075;
+		public static const enduranceDrain:Number = 0.1;
 		
 		public var damage:Number = 0;
 		public var endurance:Number = maxEndurance;
@@ -59,10 +59,8 @@ package
 		
 		public override function update (): void
 		{
-			trace(endurance);
-			
 			if (grabbing) {
-				image.color = FP.colorLerp(0x0, c, endurance / maxEndurance);
+				image.color = c;//FP.colorLerp(0x0, c, endurance / maxEndurance);
 			} else {
 				image.color = FP.colorLerp(c, 0xFF0000, damage / maxDamage);
 			}
@@ -75,8 +73,8 @@ package
 				damage -= damageRecovery;
 				damage = Math.max(0, damage);
 				
-				endurance += enduranceRecovery;
-				endurance = Math.min(maxEndurance, endurance);
+				//endurance += enduranceRecovery;
+				//endurance = Math.min(maxEndurance, endurance);
 			}
 			
 			if (touchingLedge && ! wasTouchingLedge) {
@@ -118,7 +116,7 @@ package
 			
 			if (alive) {
 				if (Input.pressed(key) && collide("ledge", x, y)) {
-					grabbing = true;
+					grabbing = collide("ledge", x, y) as Ledge;
 				}
 			
 				if (grabbing) {
@@ -127,18 +125,20 @@ package
 						vy = 0;
 						damage = 0;
 						
-						endurance -= enduranceDrain + enduranceRecovery;
+						//endurance -= enduranceDrain + enduranceRecovery;
 						
-						if (endurance > 0) {
+						grabbing.weaken();
+						
+						if (grabbing.strength > 0) {
 							return;
 						}
 						
 						// else fall-through, grabbing = false
 					}
-				
-					grabbing = false;
 				}
 			}
+			
+			grabbing = null;
 			
 			x += vx;
 			y += vy;

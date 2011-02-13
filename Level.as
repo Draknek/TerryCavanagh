@@ -87,7 +87,7 @@ package
 				}
 				
 				if (message) {
-					message += "\nafter bungeeing " + actualScore + " meters";
+					message += "\nafter safely bungeeing " + actualScore + " meters";
 					
 					if (speed) {
 						message += "\nAverage speed: " + speed.toFixed(2) + " m/s";
@@ -162,8 +162,6 @@ package
 				
 				var y:Number = first ? 0 : lastLedge.y + lastLedge.height;
 				lastLedge = create(Ledge, false) as Ledge;
-				lastLedge.type = "ledge";
-				lastLedge.layer = 50;
 				
 				lastLedge.width = FP.random * 30 + 30 + int(first)*300;
 				lastLedge.height = FP.random * 30 + 30;
@@ -198,7 +196,7 @@ package
 					}
 				}
 				
-				lastLedge.graphic = Image.createRect(lastLedge.width, lastLedge.height, FP.getColorRGB(FP.rand(64), FP.rand(55)+200, FP.rand(64)));
+				lastLedge.recalculate();
 				
 				add(lastLedge);
 			}
