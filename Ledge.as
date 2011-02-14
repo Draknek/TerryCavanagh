@@ -28,19 +28,21 @@ package
 			
 			graphic = Image.createRect(width, height, c);
 			
-			initialStrength = 10 //+ 90 / (Math.sqrt(y) * 0.01 + 1);
+			initialStrength = 10 + 90 / (Math.sqrt(y) * 0.1 + 1) + 4;
 			
 			strength = initialStrength;
 		}
 		
 		public override function update (): void
 		{
-			if (strength < 4) {
+			if (strength < 8) {
 				graphic.x = FP.random*8 - 4;
 				graphic.y = FP.random*8 - 4;
 				
-				if (strength < 1) {
-					Image(graphic).alpha = strength;
+				weaken();
+				
+				if (strength < 2) {
+					Image(graphic).alpha = strength*0.5;
 				}
 			}
 			super.update();
