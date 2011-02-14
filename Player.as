@@ -79,7 +79,13 @@ package
 			
 			if (touchingLedge && ! wasTouchingLedge) {
 				if (alive && vy > 0) {
-					damage += Math.sqrt(vy);
+					var friendGrabbing:Boolean = (Level(world).p1.grabbing || Level(world).p2.grabbing);
+					
+					if (friendGrabbing) {
+						damage += Math.sqrt(vy)*0.5;
+					} else {
+						damage += Math.sqrt(vy);
+					}
 					
 					if (damage > maxDamage) {
 						alive = false;
