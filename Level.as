@@ -14,6 +14,11 @@ package
 		[Embed(source="images/bg.png")]
 		public static const BgGfx: Class;
 		
+		[Embed(source="audio/music.mp3")]
+		public static const MusicSfx: Class;
+		
+		public static var music:Sfx = new Sfx(MusicSfx);
+		
 		public var lastLedge:Ledge;
 		
 		public var starting:Boolean = true;
@@ -59,6 +64,7 @@ package
 				if (Input.pressed(p1.key) || Input.pressed(p2.key)) {
 					starting = false;
 					startText.text = "";
+					music.loop();
 				} else {
 					return;
 				}
@@ -98,6 +104,8 @@ package
 					}
 					
 					gameOver = true;
+					
+					music.stop();
 					
 					var highscore:Number = Main.so.data.highscore;
 					var highspeed:Number = Main.so.data.highspeed;
