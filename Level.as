@@ -7,21 +7,25 @@ package
 	
 	public class Level extends World
 	{
-		public var player:Player;
-		public var rope:Rope;
-		
-		[Embed(source="images/bg.png")]
-		public static const BgGfx: Class;
+		[Embed(source="images/bg.png")] public static const BgGfx: Class;
 		
 		public function Level ()
 		{
-			addGraphic(new Backdrop(BgGfx), 100);
+			var bg:Image = new Image(BgGfx);
+			bg.scale = 2;
+			//bg.smooth = true;
+			addGraphic(bg, 100);
 			
-			player = new Player();
+			newPlayer();
+		}
+		
+		public function newPlayer ():void
+		{
+			var player:Player = new Player();
 			
 			add(player);
 			
-			add(rope = new Rope(player));
+			add(new Rope(player));
 		}
 		
 		public override function update (): void

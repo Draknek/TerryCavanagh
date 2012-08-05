@@ -19,7 +19,9 @@ package
 		public function Rope (_p1:Player)
 		{
 			p1 = _p1;
-			p2 = new Point(FP.width * 0.5, 30);
+			p2 = new Point(FP.width * 0.5 + FP.random * 100 - 50, 20 + FP.random * 20);
+			
+			p1.rope = this;
 			
 			layer = -9;
 		}
