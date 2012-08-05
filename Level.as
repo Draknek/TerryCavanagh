@@ -8,6 +8,8 @@ package
 	public class Level extends World
 	{
 		[Embed(source="images/bg.png")] public static const BgGfx: Class;
+		[Embed(source="images/mouth.png")] public static const MouthGfx: Class;
+		[Embed(source="images/nostril.png")] public static const NostrilGfx: Class;
 		
 		public function Level ()
 		{
@@ -15,6 +17,9 @@ package
 			bg.scale = 2;
 			//bg.smooth = true;
 			addGraphic(bg, 100);
+			
+			add(new Orifice(MouthGfx, 328, 370));
+			add(new Orifice(NostrilGfx, 264, 362));
 			
 			newPlayer();
 		}
