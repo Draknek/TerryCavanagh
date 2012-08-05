@@ -63,9 +63,13 @@ package
 			text.textColor = FG_COLOR;
 			text.selectable = false;
 			text.mouseEnabled = false;
-			text.defaultTextFormat = new TextFormat("default", 16);
+			
+			var format:TextFormat = new TextFormat("default", 16);
+			format.align = "center";
+			text.defaultTextFormat = format;
+			
 			text.embedFonts = true;
-			text.autoSize = "left";
+			text.autoSize = "center";
 			text.text = "0%";
 			text.x = (sw - text.width) * 0.5;
 			text.y = sh * 0.5 + h;
@@ -94,7 +98,7 @@ package
 					text.scaleX = 2.0;
 					text.scaleY = 2.0;
 				
-					text.text = "Click to start";
+					text.text = "Trigger warnings:\n\nSpiders,\nTerry Cavanagh\n\n\n\nClick to start";
 			
 					text.y = (sh - text.height) * 0.5;
 				}
