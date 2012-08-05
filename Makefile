@@ -1,4 +1,4 @@
-OUTPUT := bungee.swf
+OUTPUT := game.swf
 
 ifdef DEBUG
 DEBUG_FLAG := true

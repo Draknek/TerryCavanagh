@@ -5,23 +5,21 @@ package
 	import net.flashpunk.masks.*;
 	import net.flashpunk.utils.*;
 	
+	import flash.geom.*;
+	
 	public class Rope extends Entity
 	{
 		public var p1:Player;
-		public var p2:Player;
+		public var p2:Point;
 		
-		public var length:Number = 250;
+		public var length:Number = 150;
+		public var maxLength:Number = 300;
 		public var lengthSq:Number = length*length;
 		
-		public var maxLength:Number = 600;
-		
-		public static const canSnap:Boolean = false;
-		public var snapped:Boolean = false;
-		
-		public function Rope (_p1:Player, _p2:Player)
+		public function Rope (_p1:Player)
 		{
 			p1 = _p1;
-			p2 = _p2;
+			p2 = new Point(FP.width * 0.5, 30);
 			
 			layer = -9;
 		}
@@ -30,11 +28,6 @@ package
 		{
 			x = (p1.x + p2.x)*0.5;
 			y = (p1.y + p2.y)*0.5;
-			
-			if (snapped) {
-				y = Math.min(p1.y, p2.y);
-				return;
-			}
 			
 			var dx:Number = p2.x - p1.x;
 			var dy:Number = p2.y - p1.y;
@@ -51,21 +44,13 @@ package
 				dx /= dz;
 				dy /= dz;
 				
-				if (canSnap) {
-					if (dz > maxLength) {
-						snapped = true;
-					}
-				}
-				
 				if (Input.pressed(Key.SPACE)) {
-					force *= 10;
+					force *= 5;
+					dx += (FP.random - 0.5) * 0.2;
 				}
 				
 				p1.vx += dx * force;
 				p1.vy += dy * force;
-				
-				p2.vx -= dx * force;
-				p2.vy -= dy * force;
 			}
 		}
 		
@@ -79,28 +64,17 @@ package
 			dx /= dz;
 			dy /= dz;
 			
-			if (snapped) {
-				Draw.line(p1.x, p1.y, p1.x + dx*maxLength*0.5, p1.y + dy*maxLength*0.5, 0x0);
-				Draw.line(p2.x, p2.y, p2.x - dx*maxLength*0.5, p2.y - dy*maxLength*0.5, 0x0);
-				return;
-			}
-			
 			x = (p1.x + p2.x)*0.5;
 			y = (p1.y + p2.y)*0.5;
 			
-			if (length < dz) {
-				var t:Number = (dz - length) / (maxLength - length);
-				if (t > 1) t = 1;
-				t = 1 - t;
+			var renderLength:Number = FP.lerp(length, maxLength, 0.5);
+			
+			if (renderLength < dz) {
 				var c:uint = 0xFFFFFF;
-				
-				if (canSnap) {
-					c = FP.getColorRGB(t*255, t*255, t*255);
-				}
 				
 				Draw.linePlus(p1.x, p1.y, p2.x, p2.y, c);
 			} else {
-				var extra:Number = length - dz;
+				var extra:Number = renderLength - dz;
 				Draw.curve(p1.x, p1.y, x, y + extra, p2.x, p2.y, 0xFFFFFF);
 			}
 		}
