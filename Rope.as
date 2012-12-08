@@ -16,10 +16,19 @@ package
 		public var maxLength:Number = 300;
 		public var lengthSq:Number = length*length;
 		
-		public function Rope (_p1:Player)
+		public var web:WebStrand;
+		public var webT:Number;
+		
+		public function Rope (_p1:Player, _web:WebStrand)
 		{
+			web = _web;
+			
+			webT = Math.random()*0.8 + 0.1;
+			
 			p1 = _p1;
-			p2 = new Point(FP.width * 0.5 + FP.random * 100 - 50, 20 + FP.random * 20);
+			p2 = new Point;
+			p2.x = FP.lerp(web.p1.x, web.p2.x, webT);
+			p2.y = FP.lerp(web.p1.y, web.p2.y, webT);
 			
 			p1.rope = this;
 			
@@ -28,6 +37,11 @@ package
 		
 		public override function update (): void
 		{
+			p2.x = FP.lerp(web.p1.x, web.p2.x, webT);
+			p2.y = FP.lerp(web.p1.y, web.p2.y, webT);
+			
+			if (! p1.active) return;
+			
 			x = (p1.x + p2.x)*0.5;
 			y = (p1.y + p2.y)*0.5;
 			
@@ -53,7 +67,18 @@ package
 				
 				p1.vx += dx * force;
 				p1.vy += dy * force;
+				
+				force *= 0.5;
+				
+				web.p1.x -= (1-webT) * dx*force;
+				web.p1.y -= (1-webT) * dy*force;
+				
+				web.p2.x -= (webT) * dx*force;
+				web.p2.y -= (webT) * dy*force;
 			}
+			
+			p2.x = FP.lerp(web.p1.x, web.p2.x, webT);
+			p2.y = FP.lerp(web.p1.y, web.p2.y, webT);
 		}
 		
 		public override function render (): void
