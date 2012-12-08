@@ -26,28 +26,55 @@ package
 			var midX:Number = FP.width*0.5;
 			
 			var points:Array = [
-				new Point(midX - 90, 40),
-				new Point(midX - 50, 50),
-				new Point(midX + 50, 50),
-				new Point(midX + 90, 40),
-				new Point(midX - 120, 10),
+				new Point(midX - 160, 0),
+				new Point(midX - 110, 35),
+				new Point(midX - 40, 50),
+				new Point(midX + 40, 50),
+				new Point(midX + 110, 35),
+				new Point(midX + 160, 0),
+				
+				new Point(midX - 150, -20),
+				new Point(midX - 80, 10),
 				new Point(midX - 30, 25),
 				new Point(midX + 30, 25),
-				new Point(midX + 120, 10)
+				new Point(midX + 80, 10),
+				new Point(midX + 150, -20),
+				
+				new Point(midX - 150, -50),
+				new Point(midX - 50, -5),
+				new Point(midX - 20, 5),
+				new Point(midX + 20, 5),
+				new Point(midX + 50, -5),
+				new Point(midX + 150, -50),
 			];
 			
 			webPoints =	points;
 			
 			for each (var p:Point in points) {
-				p.x += FP.random*20 - 10;
-				p.y += FP.random*10 - 5;
+				p.x += FP.random*10 - 5;
+				p.y += FP.random*6 - 3;
 			}
 			
-			var pairs:Array = [
-				[0,1], [1,2], [2,3],
-				[4,5], [5,6], [6,7],
-				[0,4], [1,5], [2,6], [3,7]
-			];
+			var rows:int = 3;
+			var columns:int = 6;
+			
+			var pairs:Array = [];
+			
+			for (var i:int = 0; i < columns; i++) {
+				for (var j:int = 0; j < rows; j++) {
+					var k:int;
+					
+					if (i < columns - 1) {
+						k = i + j*columns;
+						pairs.push([k, k+1]);
+					}
+					
+					if (j < rows - 1) {
+						k = i + j*columns;
+						pairs.push([k, k+columns]);
+					}
+				}
+			}
 			
 			for each (var pair:Array in pairs) {
 				var p1:Point = points[pair[0]];
@@ -56,7 +83,9 @@ package
 			
 				add(strand);
 				
-				strands.push(strand);
+				if (p1.y > 5 && p2.y > 5 && p1.x > 0 && p1.x < FP.width && p2.x > 0 && p2.x < FP.width) {
+					strands.push(strand);
+				}
 			}
 			
 			add(new Orifice(MouthGfx, 328, 370));
