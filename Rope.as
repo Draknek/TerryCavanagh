@@ -77,6 +77,8 @@ package
 			p2.y = FP.lerp(web.p1.y, web.p2.y, webT);
 		}
 		
+		public var _t:Number = 0;
+		
 		public override function render (): void
 		{
 			var dx:Number = p2.x - p1.x;
@@ -89,6 +91,13 @@ package
 			
 			x = (p1.x + p2.x)*0.5;
 			y = (p1.y + p2.y)*0.5;
+			
+			if (! p1.active) {
+				_t += 0.5 + 0.5*FP.random;
+				
+				x += Math.sin(_t*0.073)*3;
+				y += Math.sin(_t*0.031)*2;
+			}
 			
 			var renderLength:Number = FP.lerp(length, maxLength, 0.5);
 			
