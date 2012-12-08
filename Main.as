@@ -18,7 +18,7 @@ package
 		
 		public override function init (): void
 		{
-			sitelock("draknek.org");
+			//sitelock("draknek.org");
 			
 			super.init();
 		}
