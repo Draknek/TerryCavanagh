@@ -70,11 +70,7 @@ package
 				
 				force *= 0.5;
 				
-				web.p1.x -= (1-webT) * dx*force;
-				web.p1.y -= (1-webT) * dy*force;
-				
-				web.p2.x -= (webT) * dx*force;
-				web.p2.y -= (webT) * dy*force;
+				Level(world).applyForceToWeb(p2, dx, dy, force);
 			}
 			
 			p2.x = FP.lerp(web.p1.x, web.p2.x, webT);

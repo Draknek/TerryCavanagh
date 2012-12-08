@@ -57,7 +57,7 @@ package
 				p2.y -= dy * force;
 			}
 			
-			force = 0.1;
+			force = 0.1 * FP.random;
 			
 			p1.x += (start1.x - p1.x) * force;
 			p1.y += (start1.y - p1.y) * force;
